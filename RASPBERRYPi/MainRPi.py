@@ -49,10 +49,10 @@ def Interface():
     root.geometry('955x500')
     root.resizable(0, 0)
 
-    NORMALTXT = ("Arial", 20)
+    NORMALTXT = ("Arial")
 
     HeaderTitle = tk.Label(root, text='Welcome To Lab Visage Entry', font=("Arial", 40, "bold"))
-    MainFrame = tk.Frame(root, bg="red")
+    MainFrame = tk.Frame(root)
     Cam = tk.Frame(MainFrame, bg="black", height=350, width=450)
     DetailFrame = tk.Frame(MainFrame, height=310, width=430)
 
@@ -66,7 +66,7 @@ def Interface():
     HeaderTitle.pack()
     MainFrame.pack(expand=True, pady=20, padx=20, fill='both')
     Cam.grid(row=1, column=0, padx=20, pady=20)
-    ScanBtn.grid(row=5, columnspan=2, pady=40)
+    ScanBtn.grid(row=5, columnspan=3, pady=40)
     DetailFrame.grid(row=1, column=1, padx=50, pady=20)
     NameLabel.grid(row=0, column=0, pady=30)
     NoICLabel.grid(row=1, column=0)
