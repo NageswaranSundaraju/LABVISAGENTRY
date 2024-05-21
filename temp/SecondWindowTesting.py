@@ -1,16 +1,23 @@
 import tkinter as tk
 from tkinter import Toplevel
 
-# Create the main window
-root = tk.Tk()
-root.title("Main Window")
-root.geometry("400x300")
+
+def main():
+    global root
+    root = tk.Tk()
+    root.title("Main Window")
+    root.geometry("400x300")
+    open_button = tk.Button(root, text="Open Second Window", command=open_second_window)
+    open_button.pack(pady=50)
+
+    # Run the Tkinter event loop
+    root.mainloop()
 
 # Variable to keep track of the secondary window
 second_window = None
 
 def open_second_window():
-    global second_window
+    global second_window, root
     if second_window is None or not tk.Toplevel.winfo_exists(second_window):
         second_window = Toplevel(root)
         second_window.title("Second Window")
@@ -31,8 +38,5 @@ def close_second_window():
         second_window = None
 
 # Add a button to open the second window
-open_button = tk.Button(root, text="Open Second Window", command=open_second_window)
-open_button.pack(pady=50)
-
-# Run the Tkinter event loop
-root.mainloop()
+if __name__ == '__main__':
+    main()
