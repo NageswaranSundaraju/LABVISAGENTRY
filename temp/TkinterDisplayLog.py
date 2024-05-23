@@ -1,13 +1,17 @@
 import tkinter as tk
 from tkinter import scrolledtext
+import smbclient
+
+
+smbclient.ClientConfig(username='Nageswaran', password='N@ges2023')
 
 # Function to read the log file and return its content
 def read_log_file(filepath):
-    with open(filepath, 'r') as file:
+    with smbclient.open_file(filepath, 'r') as file:
         return file.read()
 
 # Path to the log file
-log_file_path = 'log.txt'
+log_file_path = '//192.168.0.254/D/PythonFileTesting/log.txt'
 
 # Read the log file
 log_content = read_log_file(log_file_path)
