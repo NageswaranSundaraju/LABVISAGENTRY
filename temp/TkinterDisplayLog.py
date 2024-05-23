@@ -3,7 +3,7 @@ from tkinter import scrolledtext
 import smbclient
 
 
-smbclient.ClientConfig(username='Nageswaran', password='N@ges2023')
+smbclient.ClientConfig(username='username', password='password')
 
 # Function to read the log file and return its content
 def read_log_file(filepath):
