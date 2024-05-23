@@ -53,11 +53,18 @@ def main():
     ClearBtn.grid(row=2, column=2, padx=50, ipadx=25)
 
     #setting frame
-    settingFrame = tk.Frame(root,bg='White',height=250,width=250)
-    settingFrame.pack(side= LEFT ,anchor='w',padx=50,ipady=80,ipadx=80)
+    settingFrame = tk.Frame(root,bg='dark grey',height=150,width=250)
+    settingFrame.pack(side= LEFT ,anchor='w',padx=50,ipady=40,ipadx=80)
 
     settinglabel = tk.Label(settingFrame, text='Setting',font=TITLETXT)
-    settinglabel.pack(anchor='w')
+    settinglabel.pack(anchor='w',pady=5,padx=5)
+
+    SystemLogBtn = tk.Button(settingFrame, text='System Logs', activebackground= 'dark grey')
+    SystemLogBtn.pack(ipady= 10,pady=10)
+    UpdateFaceBtn = tk.Button(settingFrame, text='Refresh', activebackground='dark grey')
+    UpdateFaceBtn.pack(ipady=10,pady=10)
+    StatusBtn = tk.Button(settingFrame, text='Device Status', activebackground='dark grey')
+    StatusBtn.pack(ipady=10,pady=10)
 
     # Run the Tkinter event loop
     root.mainloop()
