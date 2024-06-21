@@ -1,29 +1,22 @@
-from imutils.video import VideoStream, FPS
-import face_recognition
-import imutils
-import pickle
-import time
-import cv2
-import threading
 import tkinter as tk
+import cv2
 from mysql.connector import Error
 from PIL import Image, ImageTk
 from DBConn import condb, dbstat
+import face_recognition
+import imutils
+import pickle
+import threading
 
-# Initialize variables
-current_name = "unknown"
+# Load the known faces and embeddings
 encodings_file = "encodings.pickle"
 data = pickle.loads(open(encodings_file, "rb").read())
-vs = VideoStream(src=0, framerate=30).start()
-time.sleep(2.0)
-fps = FPS().start()
 
-# GUI variables
-NameEntry = None
-NoICEntry = None
-camera_label = None
-cap = None
-dbcon = None
+# Initialize the VideoCapture object and FPS counter
+cap = cv2.VideoCapture(1)
+fps = cv2.getTickFrequency()
+
+current_name = "unknown"
 
 def ShowData():
     no_ic_input = input('Enter IC')
@@ -31,9 +24,8 @@ def ShowData():
     if cnx:
         name, no_ic = "No Data", "No Data"
         try:
-
             cursor = cnx.cursor()
-            query = "SELECT first_name,no_ic FROM employees WHERE no_ic = %s;"
+            query = "SELECT first_name, no_ic FROM employees WHERE no_ic = %s;"
             cursor.execute(query, (no_ic_input,))
             row = cursor.fetchone()
             if row:
@@ -50,57 +42,45 @@ def ShowData():
                 print('db closed')
     NameEntry.config(text=name)
     NoICEntry.config(text=no_ic)
-def process_frame(frame):
-    global current_name
-    frame = imutils.resize(frame, width=500)
-    boxes = face_recognition.face_locations(frame)
-    encodings = face_recognition.face_encodings(frame, boxes)
-    names = []
-
-    for encoding in encodings:
-        matches = face_recognition.compare_faces(data["encodings"], encoding)
-        name = "Unknown"
-        if True in matches:
-            matched_idxs = [i for (i, b) in enumerate(matches) if b]
-            counts = {}
-            for i in matched_idxs:
-                name = data["names"][i]
-                counts[name] = counts.get(name, 0) + 1
-            name = max(counts, key=counts.get)
-            if current_name != name:
-                current_name = name
-                print(current_name)
-        names.append(name)
-
-    for ((top, right, bottom, left), name) in zip(boxes, names):
-        cv2.rectangle(frame, (left, top), (right, bottom), (0, 255, 225), 2)
-        y = top - 15 if top - 15 > 15 else top + 15
-        cv2.putText(frame, name, (left, y), cv2.FONT_HERSHEY_SIMPLEX, .8, (0, 255, 255), 2)
-
-    cv2.imshow("Facial Recognition is Running", frame)
 
 def update_frame():
-    global current_name, NameEntry, NoICEntry, camera_label, cap, dbcon
+    global current_name
+    ret, frame = cap.read()
+    if ret:
+        frame = imutils.resize(frame, width=500)
+        boxes = face_recognition.face_locations(frame)
+        encodings = face_recognition.face_encodings(frame, boxes)
+        names = []
 
-    while True:
-        frame = vs.read()
-        process_frame(frame)
-        key = cv2.waitKey(1) & 0xFF
-        if key == ord("q"):
-            break
-        fps.update()
+        for encoding in encodings:
+            matches = face_recognition.compare_faces(data["encodings"], encoding)
+            name = "Unknown"
+            if True in matches:
+                matched_idxs = [i for (i, b) in enumerate(matches) if b]
+                counts = {}
+                for i in matched_idxs:
+                    name = data["names"][i]
+                    counts[name] = counts.get(name, 0) + 1
+                name = max(counts, key=counts.get)
+                if current_name != name:
+                    current_name = name
+                    print(current_name)
+            names.append(name)
 
-        ret, frame = cap.read()
-        if ret:
-            cv2image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            img = Image.fromarray(cv2image)
-            imgtk = ImageTk.PhotoImage(image=img)
-            camera_label.imgtk = imgtk
-            camera_label.configure(image=imgtk)
-        camera_label.after(5, update_frame)
+        for ((top, right, bottom, left), name) in zip(boxes, names):
+            cv2.rectangle(frame, (left, top), (right, bottom), (0, 255, 225), 2)
+            y = top - 15 if top - 15 > 15 else top + 15
+            cv2.putText(frame, name, (left, y), cv2.FONT_HERSHEY_SIMPLEX, .8, (0, 255, 255), 2)
+
+        cv2image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        img = Image.fromarray(cv2image)
+        imgtk = ImageTk.PhotoImage(image=img)
+        camera_label.imgtk = imgtk
+        camera_label.configure(image=imgtk)
+    camera_label.after(5, update_frame)
 
 def Interface():
-    global NameEntry, NoICEntry, camera_label, cap, dbcon
+    global NameEntry, NoICEntry, camera_label, dbcon
 
     root = tk.Tk()
     root.title("LAB VISAGE ENTRY")
@@ -135,7 +115,6 @@ def Interface():
     camera_label = tk.Label(Cam, height=350, width=450)
     camera_label.pack()
 
-    cap = cv2.VideoCapture(0)
     update_frame()
 
     # Update dbcon label with the current database connection status
