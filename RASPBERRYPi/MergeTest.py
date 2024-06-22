@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import Label, messagebox
+from tkinter import messagebox
 from PIL import Image, ImageTk
 import cv2
 import face_recognition
@@ -9,8 +9,6 @@ import pickle
 import time
 from mysql.connector import Error
 from DBConn import condb
-import sys
-import os
 
 
 class FaceRecognitionApp:
@@ -23,6 +21,8 @@ class FaceRecognitionApp:
         self.current_name = "unknown"
         self.encodings_file = "../DBPS/encodings.pickle"
         self.data = pickle.loads(open(self.encodings_file, "rb").read())
+
+        # Use DirectShow backend on Windows
         self.cap = VideoStream(src=0, framerate=30).start()
         time.sleep(2.0)
         self.fps = FPS().start()
@@ -60,15 +60,14 @@ class FaceRecognitionApp:
         self.camera_label = tk.Label(Cam, height=350, width=450)
         self.camera_label.pack()
 
-    def show_data(self):
+    def show_data(self, no_ic_input):
         cnx = condb()
         if cnx:
             name, no_ic = "No Data", "No Data"
             try:
                 cursor = cnx.cursor()
-                query = "SELECT first_name,no_ic FROM employees WHERE no_ic = %s;"
-                # no_ic_input needs to be defined or passed in some way
-                # cursor.execute(query, (no_ic_input,))
+                query = "SELECT first_name, no_ic FROM employees WHERE no_ic = %s;"
+                cursor.execute(query, (no_ic_input,))
                 row = cursor.fetchone()
                 if row:
                     name, no_ic = row
@@ -114,6 +113,9 @@ class FaceRecognitionApp:
         return frame
 
     def update_frame(self):
+        if not self.cap.stream.isOpened():
+            return
+
         frame = self.cap.read()
         frame = self.process_frame(frame)
 
@@ -132,10 +134,12 @@ class FaceRecognitionApp:
     def restart_program(self):
         self.cap.stop()
         self.fps.stop()
-        self.root.destroy()
-        root = tk.Tk()
-        app = FaceRecognitionApp(root)
-        root.mainloop()
+        self.root.after(500, self.reinitialize)
+
+    def reinitialize(self):
+        for widget in self.root.winfo_children():
+            widget.destroy()
+        self.__init__(self.root)
 
 
 if __name__ == "__main__":
