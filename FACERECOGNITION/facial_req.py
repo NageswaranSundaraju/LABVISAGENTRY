@@ -8,7 +8,7 @@ import threading
 
 # Initialize variables
 current_name = "unknown"
-encodings_file = "encodings.pickle"
+encodings_file = "../DBPS/encodings.pickle"
 data = pickle.loads(open(encodings_file, "rb").read())
 vs = VideoStream(src=0, framerate=30).start()
 time.sleep(2.0)

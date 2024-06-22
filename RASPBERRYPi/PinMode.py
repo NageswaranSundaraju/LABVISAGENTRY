@@ -68,6 +68,3 @@ def setup_pin_entry_window():
 
     root.mainloop()
 
-
-
-setup_pin_entry_window()
