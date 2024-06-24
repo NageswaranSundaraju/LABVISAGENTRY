@@ -2,7 +2,8 @@ import tkinter as tk
 from tkinter import *
 import DeviceStatus
 #import train_model
-from CaptureFace import capture_images  # Import the capture_images function
+from CaptureFace import capture_images
+import TkinterDisplayLog
 
 def main():
     global root
@@ -67,7 +68,7 @@ def main():
     settinglabel = tk.Label(settingFrame, text='Setting', font=TITLETXT)
     settinglabel.pack(anchor='w', pady=5, padx=5)
 
-    SystemLogBtn = tk.Button(settingFrame, text='System Logs', activebackground='dark grey')
+    SystemLogBtn = tk.Button(settingFrame, text='System Logs', activebackground='dark grey', command=TkinterDisplayLog.log_file_viewer)
     SystemLogBtn.pack(ipady=10, pady=10)
     UpdateFaceBtn = tk.Button(settingFrame, text='Refresh', activebackground='dark grey')
     UpdateFaceBtn.pack(ipady=10, pady=10)
