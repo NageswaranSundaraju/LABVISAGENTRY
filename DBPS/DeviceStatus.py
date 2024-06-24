@@ -54,6 +54,7 @@ def fetch_system_info():
         fetch_button.config(state=tk.NORMAL)
 
     fetch_button.config(state=tk.DISABLED)
+    info_label.config(text="Connecting...")
     progress_bar.start()
     threading.Thread(target=task).start()
 
@@ -85,5 +86,4 @@ def create_gui():
     ram_label.pack()
 
     root.mainloop()
-
 
