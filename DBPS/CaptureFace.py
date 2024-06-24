@@ -7,7 +7,7 @@ from tkinter import simpledialog, messagebox
 # Function to capture images
 def capture_images(username):
     # Define the parent directory
-    parent_dir = "../dataset"
+    parent_dir = "dataset"
 
     # Create the parent directory if it doesn't exist
     if not os.path.exists(parent_dir):
@@ -45,24 +45,7 @@ def capture_images(username):
     messagebox.showinfo("Info", "Images captured successfully.")
 
 
-# Function to handle the button click
-def on_button_click():
-    username = entry.get()
-    if username:
-        capture_images(username)
-    else:
-        messagebox.showwarning("Warning", "Please enter your name.")
 
 
-# Create the main application window
-root = tk.Tk()
-root.title("Image Capture App")
 
-# Create and place widgets
-tk.Label(root, text="Enter your name:").pack(pady=10)
-entry = tk.Entry(root)
-entry.pack(pady=10)
-tk.Button(root, text="Capture Images", command=on_button_click).pack(pady=20)
 
-# Run the application
-root.mainloop()
