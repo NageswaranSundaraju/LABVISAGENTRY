@@ -1,8 +1,8 @@
 import tkinter as tk
 from tkinter import *
 import DeviceStatus
-import train_model
-
+#import train_model
+from CaptureFace import capture_images  # Import the capture_images function
 
 def main():
     global root
@@ -28,23 +28,36 @@ def main():
     NOTELLabel = tk.Label(Dframe, text='NO TEL', font=(NORMALTXT))
     NOTELLabel.grid(row=2, column=0, pady=10)
 
+    global NameEntry, NOICEntry, NOTELEntry  # Declare as global variables to access them in other functions
     NameEntry = tk.Entry(Dframe,)
     NameEntry.grid(row=0, column=1)
     NameEntry.config(bg='White', fg='Black')
     NOICEntry = tk.Entry(Dframe,)
     NOICEntry.grid(row=1, column=1)
-    NOICEntry.config(bg='White')
+    NOICEntry.config(bg='White', fg='Black')
     NOTELEntry = tk.Entry(Dframe,)
     NOTELEntry.grid(row=2, column=1)
-    NOTELEntry.config(bg='White')
+    NOTELEntry.config(bg='White', fg='Black')
 
-    OPENCAMBtn = tk.Button(Dframe, text='OPEN CAMERA')
+    def open_camera():
+        username = NameEntry.get()
+        if username.strip():  # Check if the username is not empty
+            capture_images(username)
+        else:
+            tk.messagebox.showwarning("Warning", "Please enter a name before opening the camera.")
+
+    def clear_entries():
+        NameEntry.delete(0, END)
+        NOICEntry.delete(0, END)
+        NOTELEntry.delete(0, END)
+
+    OPENCAMBtn = tk.Button(Dframe, text='OPEN CAMERA', command=open_camera)  # Link the button to the open_camera function
     OPENCAMBtn.grid(row=3, column=1, pady=20, columnspan=1)
 
     EnrollBtn = tk.Button(Dframe, text='Enroll Face')
     EnrollBtn.grid(row=1, column=2, padx=50, ipadx=5)
 
-    ClearBtn = tk.Button(Dframe, text='Clear')
+    ClearBtn = tk.Button(Dframe, text='Clear', command=clear_entries)
     ClearBtn.grid(row=2, column=2, padx=50, ipadx=25)
 
     # Setting frame
@@ -56,9 +69,9 @@ def main():
 
     SystemLogBtn = tk.Button(settingFrame, text='System Logs', activebackground='dark grey')
     SystemLogBtn.pack(ipady=10, pady=10)
-    UpdateFaceBtn = tk.Button(settingFrame, text='Refresh', activebackground='dark grey', command=train_model.train())
+    UpdateFaceBtn = tk.Button(settingFrame, text='Refresh', activebackground='dark grey')
     UpdateFaceBtn.pack(ipady=10, pady=10)
-    StatusBtn = tk.Button(settingFrame, text='Device Status', activebackground='dark grey', command=DeviceStatus.create_gui)  # Link the button to the function
+    StatusBtn = tk.Button(settingFrame, text='Device Status', activebackground='dark grey', command=DeviceStatus.create_gui)
     StatusBtn.pack(ipady=10, pady=10)
 
     # Run the Tkinter event loop
