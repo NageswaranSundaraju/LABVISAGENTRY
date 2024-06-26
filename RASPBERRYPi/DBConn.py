@@ -7,13 +7,13 @@ def condb():
     global dbstat
     try:
         cnx = mysql.connector.connect(
-            user='NAGES',
-            password='ROOT',
-            host='192.168.0.254',
-            database='mydatabase'
+            user='Nages',
+            password='admin',
+            host='192.168.187.142',
+            database='lve_user'
         )
         if cnx.is_connected():
-            print('db is connect')
+            print('db is connected')
             dbstat = "DB is Connected"
             return cnx
         else:
