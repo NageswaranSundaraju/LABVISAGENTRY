@@ -4,9 +4,9 @@ import paramiko
 import threading
 
 def get_remote_system_info():
-    hostname = '192.168.0.12'
-    username = 'root'
-    password = 'Admin'
+    hostname = '192.168.1.100'
+    username = 'pi'
+    password = 'admin'
 
     try:
         # Establish SSH connection
