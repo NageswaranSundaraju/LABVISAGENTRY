@@ -5,6 +5,7 @@ import DeviceStatus
 from CaptureFace import capture_images
 import TkinterDisplayLog
 from tkinter import *
+import train_model
 
 def main():
     global root
@@ -73,8 +74,8 @@ def main():
                     connection = mysql.connector.connect(
                         user='Nages',
                         password='admin',
-                        host='192.168.187.142',
-                        database='lve_user'
+                        host='192.168.1.101',
+                        database='lvedb'
                     )
                     cursor = connection.cursor()
                     insert_query = "INSERT INTO lect (noic, name, notel, nickname) VALUES (%s, %s, %s, %s)"
@@ -107,7 +108,7 @@ def main():
 
     SystemLogBtn = tk.Button(settingFrame, text='System Logs', activebackground='dark grey', command=TkinterDisplayLog.log_file_viewer)
     SystemLogBtn.pack(ipady=10, pady=10)
-    UpdateFaceBtn = tk.Button(settingFrame, text='Refresh', activebackground='dark grey')
+    UpdateFaceBtn = tk.Button(settingFrame, text='Refresh', activebackground='dark grey', command=train_model.train)
     UpdateFaceBtn.pack(ipady=10, pady=10)
     StatusBtn = tk.Button(settingFrame, text='Device Status', activebackground='dark grey', command=DeviceStatus.create_gui)
     StatusBtn.pack(ipady=10, pady=10)
