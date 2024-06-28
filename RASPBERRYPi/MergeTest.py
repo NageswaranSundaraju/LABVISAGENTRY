@@ -7,9 +7,9 @@ import imutils
 from imutils.video import VideoStream, FPS
 import pickle
 import time
+import mysql.connector
 from mysql.connector import Error
-from DBConn import condb
-
+from PinMode import setup_pin_entry_window
 
 class FaceRecognitionApp:
     def __init__(self, root):
@@ -60,40 +60,19 @@ class FaceRecognitionApp:
         self.camera_label = tk.Label(Cam, height=350, width=450)
         self.camera_label.pack()
 
-    def show_data(self, no_ic_input):
-        cnx = condb()
-        if cnx:
-            name, no_ic = "No Data", "No Data"
-            try:
-                cursor = cnx.cursor()
-                query = "SELECT first_name, no_ic FROM employees WHERE no_ic = %s;"
-                cursor.execute(query, (no_ic_input,))
-                row = cursor.fetchone()
-                if row:
-                    name, no_ic = row
-                else:
-                    messagebox.showinfo("Info", "No data found")
-            except Error as err:
-                print(err)
-            finally:
-                if cursor:
-                    cursor.close()
-                if cnx:
-                    cnx.close()
-                    print('db closed')
-            self.NameEntry.config(text=name)
-            self.NoICEntry.config(text=no_ic)
-
     def process_frame(self, frame):
         frame = imutils.resize(frame, width=500)
         boxes = face_recognition.face_locations(frame)
         encodings = face_recognition.face_encodings(frame, boxes)
         names = []
 
+        face_detected = False  # Add a flag to check if a face is detected
+
         for encoding in encodings:
             matches = face_recognition.compare_faces(self.data["encodings"], encoding)
             name = "Unknown"
             if True in matches:
+                face_detected = True  # Set the flag to True if a face is matched
                 matched_idxs = [i for (i, b) in enumerate(matches) if b]
                 counts = {}
                 for i in matched_idxs:
@@ -103,14 +82,48 @@ class FaceRecognitionApp:
                 if self.current_name != name:
                     self.current_name = name
                     print(self.current_name)
+                    self.fetch_user_info(self.current_name)
             names.append(name)
+
+        if not face_detected:  # Show message if no face is detected
+            self.current_name = "Unknown"
+            self.NameEntry.config(text="Access Denied")
+            self.NoICEntry.config(text="")
+            self.cap.stop()
+            self.fps.stop()
+            return frame
 
         for ((top, right, bottom, left), name) in zip(boxes, names):
             cv2.rectangle(frame, (left, top), (right, bottom), (0, 255, 225), 2)
             y = top - 15 if top - 15 > 15 else top + 15
             cv2.putText(frame, name, (left, y), cv2.FONT_HERSHEY_SIMPLEX, .8, (0, 255, 255), 2)
-            self.NameEntry.config(text=self.current_name)
         return frame
+
+    def fetch_user_info(self, nickname):
+        try:
+            connection = mysql.connector.connect(
+                user='Nages',
+                password='admin',
+                host='192.168.1.101',
+                database='lvedb'
+            )
+            if connection.is_connected():
+                cursor = connection.cursor()
+                cursor.execute("SELECT name, noic FROM lect WHERE nickname = %s", (nickname,))
+                record = cursor.fetchone()
+                if record:
+                    self.NameEntry.config(text=record[0])
+                    self.NoICEntry.config(text=record[1])
+                    messagebox.showinfo("Access Granted", f"Welcome {record[0]}")
+                else:
+                    self.NameEntry.config(text="Not found")
+                    self.NoICEntry.config(text="Not found")
+        except Error as e:
+            messagebox.showerror("Database Error", f"Error connecting to MySQL: {e}")
+        finally:
+            if connection.is_connected():
+                cursor.close()
+                connection.close()
 
     def update_frame(self):
         if not self.cap.stream.isOpened():
