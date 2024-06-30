@@ -1,0 +1,22 @@
+{
+    "devices": [
+        {
+            "name": "RPi RK1",
+            "hostname": "192.168.1.100",
+            "username": "pi",
+            "password": "admin"
+        },
+        {
+            "name": "RPi GL1",
+            "hostname": "192.168.45.134",
+            "username": "root",
+            "password": "admin"
+        },
+        {
+            "name": "WEBSERVER",
+            "hostname": "192.168.0.9",
+            "username": "root",
+            "password": "admin"
+        }
+    ]
+}
