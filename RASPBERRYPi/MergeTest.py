@@ -9,10 +9,17 @@ import pickle
 import time
 import mysql.connector
 from mysql.connector import Error
+import datetime
+import logging
 from PinMode import setup_pin_entry_window
+
+logging.basicConfig(filename='access_log.log', level=logging.INFO, format='%(asctime)s - %(message)s')
+
 
 class FaceRecognitionApp:
     def __init__(self, root):
+
+
         self.root = root
         self.root.title("LAB VISAGE ENTRY")
         self.root.geometry('955x500')
@@ -89,8 +96,6 @@ class FaceRecognitionApp:
             self.current_name = "Unknown"
             self.NameEntry.config(text="Access Denied")
             self.NoICEntry.config(text="")
-            self.cap.stop()
-            self.fps.stop()
             return frame
 
         for ((top, right, bottom, left), name) in zip(boxes, names):
@@ -102,9 +107,9 @@ class FaceRecognitionApp:
     def fetch_user_info(self, nickname):
         try:
             connection = mysql.connector.connect(
-                user='Nages',
-                password='admin',
-                host='192.168.1.101',
+                user='NAGES',
+                password='ROOT',
+                host='192.168.0.254',
                 database='lvedb'
             )
             if connection.is_connected():
@@ -115,6 +120,11 @@ class FaceRecognitionApp:
                     self.NameEntry.config(text=record[0])
                     self.NoICEntry.config(text=record[1])
                     messagebox.showinfo("Access Granted", f"Welcome {record[0]}")
+
+                    # Logging access
+                    access_log_message = f"Access granted to {record[0]} at {datetime.datetime.now()}"
+                    logging.info(access_log_message)
+
                 else:
                     self.NameEntry.config(text="Not found")
                     self.NoICEntry.config(text="Not found")
@@ -124,6 +134,8 @@ class FaceRecognitionApp:
             if connection.is_connected():
                 cursor.close()
                 connection.close()
+
+
 
     def update_frame(self):
         if not self.cap.stream.isOpened():
