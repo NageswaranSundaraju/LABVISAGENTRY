@@ -5,3 +5,4 @@ face-recognition==1.3.0
 imutils==0.5.4
 numpy==1.26.4
 paramiko==3.4.0
+scp == 0.15.0
