@@ -17,6 +17,12 @@
             "hostname": "192.168.0.9",
             "username": "root",
             "password": "admin"
+        },
+        {
+            "name": "westsel_my",
+            "hostname": "192.168.0.254",
+            "username": "Nageswaran",
+            "password": "admin"
         }
     ]
 }
