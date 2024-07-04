@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox
+from tkinter import ttk
 import mysql.connector
 import DeviceStatus
 from CaptureFace import capture_images
@@ -12,40 +13,45 @@ logging.basicConfig(filename='admin.log', level=logging.INFO, format='%(asctime)
 
 
 def main():
-
     root = tk.Tk()
     root.title("LVE ADMIN")
-    root.geometry("750x450")
+    root.geometry("800x500")
+
+    # Apply a modern theme
+    style = ttk.Style()
+    style.theme_use('clam')
 
     # Fonts
-    TITLE_FONT = ("Arial", 40, "bold")
+    TITLE_FONT = ("Arial", 30, "bold")
     NORMAL_FONT = ("Arial", 15)
     BUTTON_FONT = ("Arial", 12)
 
     # Header
-    header_frame = tk.Frame(root, bg="lightgrey", width=955, height=100)
-    header_frame.pack(pady=(10, 20))
+    header_frame = ttk.Frame(root, padding="10")
+    header_frame.pack(fill=tk.X, pady=(10, 20))
 
-    header_label = tk.Label(header_frame, text="Lab Visage Entry Admin", font=TITLE_FONT)
+    header_label = ttk.Label(header_frame, text="Lab Visage Entry Admin", font=TITLE_FONT)
     header_label.pack(pady=10)
 
     # Detail Section
-    detail_frame = tk.Frame(root, width=400, height=300)
-    detail_frame.pack(side=tk.LEFT, anchor='nw', padx=20, pady=10)
+    detail_frame = ttk.Frame(root, padding="10")
+    detail_frame.pack(side=tk.LEFT, anchor='nw', padx=20, pady=10, fill=tk.BOTH, expand=True)
 
-    name_label = tk.Label(detail_frame, text='NAME', font=NORMAL_FONT)
+    name_label = ttk.Label(detail_frame, text='NAME', font=NORMAL_FONT)
     name_label.grid(row=0, column=0, pady=10, padx=10, sticky='w')
-    noic_label = tk.Label(detail_frame, text='NO IC', font=NORMAL_FONT)
+    noic_label = ttk.Label(detail_frame, text='NO IC', font=NORMAL_FONT)
     noic_label.grid(row=1, column=0, pady=10, padx=10, sticky='w')
-    notel_label = tk.Label(detail_frame, text='NO TEL', font=NORMAL_FONT)
+    notel_label = ttk.Label(detail_frame, text='NO TEL', font=NORMAL_FONT)
     notel_label.grid(row=2, column=0, pady=10, padx=10, sticky='w')
 
-    name_entry = tk.Entry(detail_frame, font=NORMAL_FONT)
-    name_entry.grid(row=0, column=1, padx=10, pady=10)
-    noic_entry = tk.Entry(detail_frame, font=NORMAL_FONT)
-    noic_entry.grid(row=1, column=1, padx=10, pady=10)
-    notel_entry = tk.Entry(detail_frame, font=NORMAL_FONT)
-    notel_entry.grid(row=2, column=1, padx=10, pady=10)
+    name_entry = ttk.Entry(detail_frame, font=NORMAL_FONT)
+    name_entry.grid(row=0, column=1, padx=10, pady=10, sticky='ew')
+    noic_entry = ttk.Entry(detail_frame, font=NORMAL_FONT)
+    noic_entry.grid(row=1, column=1, padx=10, pady=10, sticky='ew')
+    notel_entry = ttk.Entry(detail_frame, font=NORMAL_FONT)
+    notel_entry.grid(row=2, column=1, padx=10, pady=10, sticky='ew')
+
+    detail_frame.columnconfigure(1, weight=1)  # Make entry columns expandable
 
     def open_camera():
         username = noic_entry.get()
@@ -92,41 +98,42 @@ def main():
         else:
             messagebox.showwarning("Warning", "Please fill in all fields.")
 
-    open_cam_btn = tk.Button(detail_frame, text='OPEN CAMERA', command=open_camera, font=BUTTON_FONT)
-    open_cam_btn.grid(row=4, column=1, pady=20, columnspan=2, padx=10)
+    open_cam_btn = ttk.Button(detail_frame, text='OPEN CAMERA', command=open_camera, style='TButton')
+    open_cam_btn.grid(row=4, column=0, pady=20, columnspan=2, padx=10)
 
-    enroll_btn = tk.Button(detail_frame, text='Enroll Face', command=enroll_face, font=BUTTON_FONT)
+    enroll_btn = ttk.Button(detail_frame, text='Enroll Face', command=enroll_face, style='TButton')
     enroll_btn.grid(row=1, column=2, padx=30, pady=10, ipadx=10)
 
-    clear_btn = tk.Button(detail_frame, text='Clear', command=clear_entries, font=BUTTON_FONT)
+    clear_btn = ttk.Button(detail_frame, text='Clear', command=clear_entries, style='TButton')
     clear_btn.grid(row=2, column=2, padx=30, pady=10, ipadx=20)
 
     # Setting frame
-    setting_frame = tk.Frame(root, bg='lightgrey', width=200, height=300)
-    setting_frame.pack(side=tk.LEFT, anchor='nw', padx=20, pady=10)
+    setting_frame = ttk.Frame(root, padding="10")
+    setting_frame.pack(side=tk.LEFT, anchor='nw', padx=20, pady=10, fill=tk.BOTH, expand=True)
 
-    setting_label = tk.Label(setting_frame, text='Settings', font=TITLE_FONT)
+    setting_label = ttk.Label(setting_frame, text='Settings', font=TITLE_FONT)
     setting_label.pack(pady=10)
 
-    system_log_btn = tk.Button(setting_frame, text='System Logs', command=TkinterDisplayLog.choose_log_file,
-                               font=BUTTON_FONT)
-    system_log_btn.pack(pady=10, ipadx=10)
+    button_width = 15  # Define button width for consistency
 
-    update_face_btn = tk.Button(setting_frame, text='Refresh', command=train_model.create_gui,
-                                font=BUTTON_FONT)
-    update_face_btn.pack(pady=10, ipadx=10)
+    system_log_btn = ttk.Button(setting_frame, text='System Logs', command=TkinterDisplayLog.choose_log_file,
+                                style='TButton', width=button_width)
+    system_log_btn.pack(pady=10)
 
-    device_status_btn = tk.Button(setting_frame, text='Device Status', command=DeviceStatus.create_gui,
-                                  font=BUTTON_FONT)
-    device_status_btn.pack(pady=10, ipadx=10)
+    update_face_btn = ttk.Button(setting_frame, text='Refresh', command=train_model.create_gui,
+                                 style='TButton', width=button_width)
+    update_face_btn.pack(pady=10)
 
-    list_names_btn = tk.Button(setting_frame, text='List Names', command=showlect.create_gui, font=BUTTON_FONT)
-    list_names_btn.pack(pady=10, ipadx=10)
+    device_status_btn = ttk.Button(setting_frame, text='Device Status', command=DeviceStatus.create_gui,
+                                   style='TButton', width=button_width)
+    device_status_btn.pack(pady=10)
+
+    list_names_btn = ttk.Button(setting_frame, text='List Names', command=showlect.create_gui, style='TButton',
+                                width=button_width)
+    list_names_btn.pack(pady=10)
 
     root.mainloop()
 
 
 if __name__ == '__main__':
     main()
-
-

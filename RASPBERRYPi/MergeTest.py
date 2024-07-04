@@ -20,8 +20,6 @@ logging.basicConfig(filename='../DBPS/facereq.log', level=logging.INFO, format='
 
 class FaceRecognitionApp:
     def __init__(self, root):
-
-
         self.root = root
         self.root.title("LAB VISAGE ENTRY")
         self.root.geometry('955x500')
@@ -30,11 +28,11 @@ class FaceRecognitionApp:
         self.current_name = "unknown"
         self.encodings_file = "../DBPS/encodings.pickle"
         self.data = pickle.loads(open(self.encodings_file, "rb").read())
-        self.ser = serial.Serial('/dev/ttyUSB0', 9600)
-        # Use DirectShow backend on Windows
         self.cap = VideoStream(src=0, framerate=30).start()
         time.sleep(2.0)
         self.fps = FPS().start()
+
+        self.failed_attempts = 0
 
         self.build_gui()
         self.update_frame()
@@ -47,8 +45,7 @@ class FaceRecognitionApp:
         Cam = tk.Frame(MainFrame, bg="black", height=350, width=450)
         DetailFrame = tk.Frame(MainFrame, height=310, width=430)
 
-        ScanBtn = tk.Button(DetailFrame, text='SCAN FACE', bg='Green', activebackground='Green', height=5, width=15,
-                            command=self.restart_program)
+        ScanBtn = tk.Button(DetailFrame, text='SCAN FACE', bg='Green', activebackground='Green', height=5, width=15)
         NameLabel = tk.Label(DetailFrame, text='NAMA', font=(NORMALTXT))
         NoICLabel = tk.Label(DetailFrame, text='NO IC', font=(NORMALTXT))
         self.NameEntry = tk.Label(DetailFrame, text="", bg='White', fg='Black')
@@ -78,7 +75,7 @@ class FaceRecognitionApp:
         face_detected = False  # Add a flag to check if a face is detected
 
         for encoding in encodings:
-            matches = face_recognition.compare_faces(self.data["encodings"], encoding)
+            matches = face_recognition.compare_faces(self.data["encodings"], encoding, tolerance=0.4)  #Fine Tuning
             name = "Unknown"
             if True in matches:
                 face_detected = True  # Set the flag to True if a face is matched
@@ -91,17 +88,16 @@ class FaceRecognitionApp:
                 if self.current_name != name:
                     self.current_name = name
                     print(self.current_name)
+                    self.failed_attempts = 0  # Reset failed attempts
                     self.fetch_user_info(self.current_name)
-                    self.ser.write(b'1')
                     logging.info(f"Access granted for {self.current_name}")
             names.append(name)
-
-
-        if not face_detected:  # Show message if no face is detected
-            self.current_name = "Unknown"
-            self.NameEntry.config(text="Access Denied")
-            self.NoICEntry.config(text="")
             return frame
+
+        if not face_detected:
+            self.failed_attempts += 1
+            if self.failed_attempts >= 4:
+                self.show_access_denied()
 
         for ((top, right, bottom, left), name) in zip(boxes, names):
             cv2.rectangle(frame, (left, top), (right, bottom), (0, 255, 225), 2)
@@ -129,8 +125,6 @@ class FaceRecognitionApp:
                     # Logging access
                     access_log_message = f"Access granted to {record[0]} at {datetime.datetime.now()}"
                     logging.info(access_log_message)
-                    self.ser.write(b'1')
-
                 else:
                     self.NameEntry.config(text="Not found")
                     self.NoICEntry.config(text="Not found")
@@ -141,7 +135,10 @@ class FaceRecognitionApp:
                 cursor.close()
                 connection.close()
 
-
+    def show_access_denied(self):
+        messagebox.showerror("Access Denied", "Access Denied. Please try again.")
+        logging.info(f"Access denied after 4 failed attempts at {datetime.datetime.now()}")
+        self.failed_attempts = 0  # Reset failed attempts
 
     def update_frame(self):
         if not self.cap.stream.isOpened():
@@ -162,19 +159,8 @@ class FaceRecognitionApp:
         # Repeat after 10 milliseconds
         self.camera_label.after(10, self.update_frame)
 
-    def restart_program(self):
-        self.cap.stop()
-        self.fps.stop()
-        self.root.after(500, self.reinitialize)
-
-    def reinitialize(self):
-        for widget in self.root.winfo_children():
-            widget.destroy()
-        self.__init__(self.root)
-
 
 if __name__ == "__main__":
     root = tk.Tk()
     app = FaceRecognitionApp(root)
     root.mainloop()
-

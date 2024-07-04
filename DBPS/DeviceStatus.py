@@ -4,9 +4,22 @@ import paramiko
 import threading
 import json
 import logging
+from cryptography.fernet import Fernet
 
 logging.basicConfig(filename="admin.log", level=logging.ERROR,
                     format='%(asctime)s - %(levelname)s - %(message)s')
+
+# Generate a key for encryption (this should ideally be securely stored)
+key = Fernet.generate_key()
+cipher_suite = Fernet(key)
+
+def encrypt_password(password):
+    encrypted_password = cipher_suite.encrypt(password.encode())
+    return encrypted_password.decode()
+
+def decrypt_password(encrypted_password):
+    decrypted_password = cipher_suite.decrypt(encrypted_password.encode())
+    return decrypted_password.decode()
 
 def get_remote_system_info(hostname, username, password):
     try:
@@ -40,7 +53,7 @@ def fetch_system_info(device_index):
             device = data['devices'][device_index]
             hostname = device['hostname']
             username = device['username']
-            password = device['password']
+            password = decrypt_password(device['password'])
             device_name = device['name']
 
         # Update connection info display
@@ -78,7 +91,7 @@ def add_device():
             "name": name_entry.get(),
             "hostname": hostname_entry.get(),
             "username": username_entry.get(),
-            "password": password_entry.get()
+            "password": encrypt_password(password_entry.get())
         }
 
         try:
@@ -100,23 +113,23 @@ def add_device():
 
     add_device_window = tk.Toplevel()
     add_device_window.title("Add New Device")
-    add_device_window.geometry("500x500")  # Set the size of the window
+    add_device_window.geometry("400x250")  # Set the size of the window
 
     tk.Label(add_device_window, text="Device Name:").grid(row=0, column=0, padx=10, pady=5)
     tk.Label(add_device_window, text="Hostname/IP:").grid(row=1, column=0, padx=10, pady=5)
     tk.Label(add_device_window, text="Username:").grid(row=2, column=0, padx=10, pady=5)
     tk.Label(add_device_window, text="Password:").grid(row=3, column=0, padx=10, pady=5)
 
-    name_entry = tk.Entry(add_device_window, width=30)
+    name_entry = ttk.Entry(add_device_window, width=30)
     name_entry.grid(row=0, column=1, padx=10, pady=5)
-    hostname_entry = tk.Entry(add_device_window, width=30)
+    hostname_entry = ttk.Entry(add_device_window, width=30)
     hostname_entry.grid(row=1, column=1, padx=10, pady=5)
-    username_entry = tk.Entry(add_device_window, width=30)
+    username_entry = ttk.Entry(add_device_window, width=30)
     username_entry.grid(row=2, column=1, padx=10, pady=5)
-    password_entry = tk.Entry(add_device_window, width=30, show='*')
+    password_entry = ttk.Entry(add_device_window, width=30, show='*')
     password_entry.grid(row=3, column=1, padx=10, pady=5)
 
-    save_button = tk.Button(add_device_window, text="Save Device", command=save_device)
+    save_button = ttk.Button(add_device_window, text="Save Device", command=save_device)
     save_button.grid(row=4, column=0, columnspan=2, pady=10)
 
 def update_dropdown():
@@ -136,41 +149,45 @@ def create_gui():
     root = tk.Tk()
     root.title("Remote System Information")
 
+    # Apply a modern theme
+    style = ttk.Style()
+    style.theme_use('clam')
+
     # Load devices from JSON file initially
     with open('devices.json') as json_file:
         data = json.load(json_file)
         device_list = [device['name'] for device in data['devices']]
 
     device_var = tk.StringVar()
-    device_dropdown = ttk.Combobox(root, textvariable=device_var, values=device_list)
+    device_dropdown = ttk.Combobox(root, textvariable=device_var, values=device_list, width=30)
     device_dropdown.pack(pady=10)
 
-    fetch_button = tk.Button(root, text="Fetch System Info", command=lambda: fetch_system_info(device_dropdown.current()), font=("Arial", 14))
+    fetch_button = ttk.Button(root, text="Fetch System Info", command=lambda: fetch_system_info(device_dropdown.current()), width=30)
     fetch_button.pack(pady=10)
 
-    add_button = tk.Button(root, text="Add Device", command=add_device)
+    add_button = ttk.Button(root, text="Add Device", command=add_device, width=30)
     add_button.pack(pady=10)
 
     # Connection info label
     connection_info = tk.StringVar()
-    connection_label = tk.Label(root, textvariable=connection_info, font=("Arial", 10), fg="blue")
+    connection_label = ttk.Label(root, textvariable=connection_info, font=("Arial", 10), foreground="blue")
     connection_label.pack(pady=5)
 
     # Create progress bar
-    progress_bar = ttk.Progressbar(root, mode='indeterminate')
+    progress_bar = ttk.Progressbar(root, mode='indeterminate', length=300)
     progress_bar.pack(pady=10)
 
     # Create labels to display system information
-    info_label = tk.Label(root, text="", wraplength=500, font=("Arial", 12), padx=20, pady=20, justify=tk.LEFT)
+    info_label = ttk.Label(root, text="", wraplength=500, font=("Arial", 12), padding=(20, 20, 20, 0), justify=tk.LEFT)
     info_label.pack()
 
-    hostname_label = tk.Label(root, text="", font=("Arial", 12))
+    hostname_label = ttk.Label(root, text="", font=("Arial", 12))
     hostname_label.pack()
 
-    cpu_label = tk.Label(root, text="", font=("Arial", 12))
+    cpu_label = ttk.Label(root, text="", font=("Arial", 12))
     cpu_label.pack()
 
-    ram_label = tk.Label(root, text="", font=("Arial", 12))
+    ram_label = ttk.Label(root, text="", font=("Arial", 12))
     ram_label.pack()
 
     root.mainloop()

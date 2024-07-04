@@ -2,6 +2,8 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 import mysql.connector
 import logging
+import os
+import shutil
 
 logging.basicConfig(filename="admin.log", level=logging.ERROR,
                     format='%(asctime)s - %(levelname)s - %(message)s')
@@ -24,9 +26,10 @@ def fetch_data():
         return data
 
     except mysql.connector.Error as err:
-        logging.error(f"{err} - Error in show lect module")
+        logging.error(f"{err} - Error in fetch_data module")
         print(f"Error: {err}")
         return []
+
 
 def delete_data(selected_item):
     try:
@@ -37,15 +40,32 @@ def delete_data(selected_item):
             database='lvedb'
         )
         cursor = connection.cursor()
+
+        # Retrieve the IC number for folder deletion
+        select_query = "SELECT noic FROM lect WHERE noic = %s"
+        cursor.execute(select_query, (selected_item[1],))
+        data = cursor.fetchone()
+
+        if data:
+            noic = data[0]
+            # Construct the folder path
+            folder_path = os.path.join("dataset", str(noic))
+            # Delete folder named with the IC number (assuming it's a directory)
+            if os.path.exists(folder_path):
+                shutil.rmtree(folder_path)
+            else:
+                logging.error(f"Folder {folder_path} not found for deletion")
+
         delete_query = "DELETE FROM lect WHERE noic = %s"
         cursor.execute(delete_query, (selected_item[1],))
         connection.commit()
         cursor.close()
         connection.close()
+
         return True
 
     except mysql.connector.Error as err:
-        logging.error(f"{err} - Error in delete lect module")
+        logging.error(f"{err} - Error in delete_data module")
         print(f"Error: {err}")
         return False
 
@@ -66,7 +86,7 @@ def update_data(selected_item, updated_values):
         return True
 
     except mysql.connector.Error as err:
-        logging.error(f"{err} - Error in update lect module")
+        logging.error(f"{err} - Error in update_data module")
         print(f"Error: {err}")
         return False
 
@@ -104,45 +124,48 @@ def on_update():
 
     update_window = tk.Toplevel(root)
     update_window.title("Update Item")
-    update_window.geometry("300x200")
 
-    tk.Label(update_window, text="Name").pack(pady=5)
-    name_entry = tk.Entry(update_window)
-    name_entry.pack(pady=5)
+    update_frame = ttk.Frame(update_window, padding=20)
+    update_frame.pack(fill=tk.BOTH, expand=True)
+
+    tk.Label(update_frame, text="Name").grid(row=0, column=0, padx=10, pady=5, sticky="w")
+    name_entry = ttk.Entry(update_frame)
+    name_entry.grid(row=0, column=1, padx=10, pady=5, sticky="ew")
     name_entry.insert(0, values[0])
 
-    tk.Label(update_window, text="IC Number").pack(pady=5)
-    noic_entry = tk.Entry(update_window)
-    noic_entry.pack(pady=5)
+    tk.Label(update_frame, text="IC Number").grid(row=1, column=0, padx=10, pady=5, sticky="w")
+    noic_entry = ttk.Entry(update_frame)
+    noic_entry.grid(row=1, column=1, padx=10, pady=5, sticky="ew")
     noic_entry.insert(0, values[1])
 
-    tk.Label(update_window, text="Telephone Number").pack(pady=5)
-    notel_entry = tk.Entry(update_window)
-    notel_entry.pack(pady=5)
+    tk.Label(update_frame, text="Telephone Number").grid(row=2, column=0, padx=10, pady=5, sticky="w")
+    notel_entry = ttk.Entry(update_frame)
+    notel_entry.grid(row=2, column=1, padx=10, pady=5, sticky="ew")
     notel_entry.insert(0, values[2])
 
-    tk.Button(update_window, text="Save", command=save_updates).pack(pady=10)
+    save_button = ttk.Button(update_frame, text="Save", command=save_updates)
+    save_button.grid(row=3, column=0, columnspan=2, pady=10)
 
 def create_gui():
     global root, tree
     root = tk.Tk()
     root.title("List of Names")
-    root.geometry("600x400")
+    root.geometry("800x500")
 
-    label = tk.Label(root, text="Names, IC Numbers, and Telephone Numbers in Database", font=("Arial", 16))
+    label = ttk.Label(root, text="Names, IC Numbers, and Telephone Numbers in Database", font=("Arial", 16))
     label.pack(pady=10)
 
     # Create Treeview widget with scrollbars
-    frame = tk.Frame(root)
-    frame.pack(pady=20, fill=tk.BOTH, expand=True)
+    tree_frame = ttk.Frame(root)
+    tree_frame.pack(pady=20, fill=tk.BOTH, expand=True)
 
-    tree = ttk.Treeview(frame, columns=("Name", "NOIC", "NOTEL"), show="headings")
+    tree = ttk.Treeview(tree_frame, columns=("Name", "NOIC", "NOTEL"), show="headings")
     tree.heading("Name", text="Name")
     tree.heading("NOIC", text="IC Number")
     tree.heading("NOTEL", text="Telephone Number")
 
-    scrollbar_x = ttk.Scrollbar(frame, orient=tk.HORIZONTAL, command=tree.xview)
-    scrollbar_y = ttk.Scrollbar(frame, orient=tk.VERTICAL, command=tree.yview)
+    scrollbar_x = ttk.Scrollbar(tree_frame, orient=tk.HORIZONTAL, command=tree.xview)
+    scrollbar_y = ttk.Scrollbar(tree_frame, orient=tk.VERTICAL, command=tree.yview)
     tree.configure(xscrollcommand=scrollbar_x.set, yscrollcommand=scrollbar_y.set)
 
     scrollbar_x.pack(side=tk.BOTTOM, fill=tk.X)
@@ -155,16 +178,16 @@ def create_gui():
         for row in data:
             tree.insert("", tk.END, values=row)
     else:
-        error_label = tk.Label(root, text="Error fetching data from the database. Check the log for details.", fg="red")
+        error_label = ttk.Label(root, text="Error fetching data from the database. Check the log for details.", foreground="red")
         error_label.pack(pady=10)
 
-    button_frame = tk.Frame(root)
+    button_frame = ttk.Frame(root)
     button_frame.pack(pady=10)
 
-    delete_button = tk.Button(button_frame, text="Delete", command=on_delete)
+    delete_button = ttk.Button(button_frame, text="Delete", command=on_delete)
     delete_button.pack(side=tk.LEFT, padx=10)
 
-    update_button = tk.Button(button_frame, text="Update", command=on_update)
+    update_button = ttk.Button(button_frame, text="Update", command=on_update)
     update_button.pack(side=tk.LEFT, padx=10)
 
     root.mainloop()

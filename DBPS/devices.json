@@ -1,16 +1,10 @@
 {
     "devices": [
         {
-            "name": "RPI",
+            "name": "Test",
             "hostname": "192.168.146.174",
             "username": "pi",
-            "password": "admin"
-        },
-        {
-            "name": "rk1_rpi",
-            "hostname": "192.168.146.174",
-            "username": "pi",
-            "password": "admin"
+            "password": "gAAAAABmhxDWjT6Nuuludz-EIZmvMDnooKQjTJz6L5wZT4TLgPqU64v2HaL43cHrR3DIQHtLOhQpH-6iIur1Rrmqx-vu40VU7w=="
         }
     ]
 }

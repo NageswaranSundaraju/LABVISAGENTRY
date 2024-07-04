@@ -2,8 +2,8 @@ import paramiko
 import scp
 
 
-pi_address = '192.168.0.9'
-pi_username = 'root'
+pi_address = '192.168.146.174'
+pi_username = 'pi'
 pi_password = 'admin'
 
 # Connect to the server via SSH
@@ -13,7 +13,7 @@ ssh.connect(pi_address, username=pi_username, password=pi_password)
 
 # SCP the file to Raspberry Pi
 with scp.SCPClient(ssh.get_transport()) as scp_client:
-    scp_client.put('file_name', remote_path='pathname/')
+    scp_client.put('encodings.pickle', remote_path='/home/pi/Desktop/LABVISAGENTRY/RASPBERRYPi')
 
 # Close SSH connection
 ssh.close()

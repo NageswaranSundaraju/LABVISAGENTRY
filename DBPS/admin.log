@@ -1,10 +1,9 @@
-2024-07-02 21:26:12,397 - ERROR - DATABASE ERROR 2003 (HY000): Can't connect to MySQL server on '192.168.0.254:3306' (60)
-2024-07-02 21:28:10,698 - INFO - Training starts...
-2024-07-02 21:28:15,782 - INFO - Training completed
-2024-07-04 23:20:37,846 - ERROR - 2003 (HY000): Can't connect to MySQL server on '192.168.0.254:3306' (51) - Error in show lect module
-2024-07-04 23:22:42,120 - ERROR - 2003 (HY000): Can't connect to MySQL server on '192.168.0.254:3306' (51) - Error in show lect module
-2024-07-04 23:41:06,084 - INFO - Training starts...
-2024-07-04 23:41:28,954 - INFO - Training starts...
-2024-07-04 23:42:46,835 - INFO - Training completed
-2024-07-05 00:52:11,658 - ERROR - 2003 (HY000): Can't connect to MySQL server on '192.168.0.254:3306' (10060) - Error in delete lect module
-2024-07-05 00:53:32,185 - ERROR - 2003 (HY000): Can't connect to MySQL server on '192.168.0.254:3306' (10060) - Error in delete lect module
+2024-07-05 04:33:45,326 - INFO - Training starts...
+2024-07-05 04:34:04,152 - INFO - Training completed
+2024-07-05 04:34:04,225 - INFO - Connected (version 2.0, client OpenSSH_7.9p1)
+2024-07-05 04:34:04,378 - INFO - Authentication (password) successful!
+2024-07-05 04:34:04,538 - INFO - File Uploaded
+2024-07-05 04:42:07,127 - ERROR - Error: [WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond
+2024-07-05 04:54:05,885 - ERROR - Folder 021016081099 not found for deletion
+2024-07-05 05:14:01,507 - ERROR - Error: [Errno 11001] getaddrinfo failed
+2024-07-05 05:16:32,848 - ERROR - Error: [WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond
