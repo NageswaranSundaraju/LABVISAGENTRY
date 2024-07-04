@@ -9,9 +9,9 @@ logging.basicConfig(filename="admin.log", level=logging.ERROR,
 def fetch_data():
     try:
         connection = mysql.connector.connect(
-            user='NAGES',
-            password='ROOT',
-            host='192.168.0.254',
+            user='Nages',
+            password='admin',
+            host='192.168.146.1',
             database='lvedb'
         )
         cursor = connection.cursor()
@@ -31,9 +31,9 @@ def fetch_data():
 def delete_data(selected_item):
     try:
         connection = mysql.connector.connect(
-            user='NAGES',
-            password='ROOT',
-            host='192.168.0.254',
+            user='Nages',
+            password='admin',
+            host='192.168.146.1',
             database='lvedb'
         )
         cursor = connection.cursor()
@@ -52,9 +52,9 @@ def delete_data(selected_item):
 def update_data(selected_item, updated_values):
     try:
         connection = mysql.connector.connect(
-            user='NAGES',
-            password='ROOT',
-            host='192.168.0.254',
+            user='Nages',
+            password='admin',
+            host='192.168.146.1',
             database='lvedb'
         )
         cursor = connection.cursor()

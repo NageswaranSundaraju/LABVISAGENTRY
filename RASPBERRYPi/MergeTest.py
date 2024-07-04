@@ -11,9 +11,11 @@ import mysql.connector
 from mysql.connector import Error
 import datetime
 import logging
+import serial
+
 from PinMode import setup_pin_entry_window
 
-logging.basicConfig(filename='access_log.log', level=logging.INFO, format='%(asctime)s - %(message)s')
+logging.basicConfig(filename='../DBPS/facereq.log', level=logging.INFO, format='%(asctime)s - %(message)s')
 
 
 class FaceRecognitionApp:
@@ -28,7 +30,7 @@ class FaceRecognitionApp:
         self.current_name = "unknown"
         self.encodings_file = "../DBPS/encodings.pickle"
         self.data = pickle.loads(open(self.encodings_file, "rb").read())
-
+        self.ser = serial.Serial('/dev/ttyUSB0', 9600)
         # Use DirectShow backend on Windows
         self.cap = VideoStream(src=0, framerate=30).start()
         time.sleep(2.0)
@@ -90,8 +92,10 @@ class FaceRecognitionApp:
                     self.current_name = name
                     print(self.current_name)
                     self.fetch_user_info(self.current_name)
+                    self.ser.write(b'1')
                     logging.info(f"Access granted for {self.current_name}")
             names.append(name)
+
 
         if not face_detected:  # Show message if no face is detected
             self.current_name = "Unknown"
@@ -108,14 +112,14 @@ class FaceRecognitionApp:
     def fetch_user_info(self, noic):
         try:
             connection = mysql.connector.connect(
-                user='NAGES',
-                password='ROOT',
+                user='Nages',
+                password='admin',
                 host='192.168.146.1',
                 database='lvedb'
             )
             if connection.is_connected():
                 cursor = connection.cursor()
-                cursor.execute("SELECT nameFROM lect WHERE noic = %s", (noic,))
+                cursor.execute("SELECT name, noic FROM lect WHERE noic = %s", (noic,))
                 record = cursor.fetchone()
                 if record:
                     self.NameEntry.config(text=record[0])
@@ -125,6 +129,7 @@ class FaceRecognitionApp:
                     # Logging access
                     access_log_message = f"Access granted to {record[0]} at {datetime.datetime.now()}"
                     logging.info(access_log_message)
+                    self.ser.write(b'1')
 
                 else:
                     self.NameEntry.config(text="Not found")

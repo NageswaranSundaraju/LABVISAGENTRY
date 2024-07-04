@@ -72,9 +72,9 @@ def main():
             if confirm:
                 try:
                     connection = mysql.connector.connect(
-                        user='NAGES',
-                        password='ROOT',
-                        host='192.168.0.254',
+                        user='Nages',
+                        password='admin',
+                        host='192.168.146.1',
                         database='lvedb'
                     )
                     cursor = connection.cursor()
