@@ -9,7 +9,6 @@ import showlect
 import logging
 
 logging.basicConfig(filename='admin.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-logging.basicConfig(filename="admin.log", level=logging.ERROR, format='%(asctime)s - %(levelname)s - %(message)s')
 
 
 def main():

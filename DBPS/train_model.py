@@ -95,4 +95,5 @@ def create_gui():
     # Run the GUI event loop
     root.mainloop()
 
-
+if __name__ == '__main__':
+    create_gui()

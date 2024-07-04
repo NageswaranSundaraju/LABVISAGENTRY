@@ -1,0 +1,5 @@
+2024-07-02 21:26:12,397 - ERROR - DATABASE ERROR 2003 (HY000): Can't connect to MySQL server on '192.168.0.254:3306' (60)
+2024-07-02 21:28:10,698 - INFO - Training starts...
+2024-07-02 21:28:15,782 - INFO - Training completed
+2024-07-04 23:20:37,846 - ERROR - 2003 (HY000): Can't connect to MySQL server on '192.168.0.254:3306' (51) - Error in show lect module
+2024-07-04 23:22:42,120 - ERROR - 2003 (HY000): Can't connect to MySQL server on '192.168.0.254:3306' (51) - Error in show lect module

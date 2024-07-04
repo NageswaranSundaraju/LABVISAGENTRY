@@ -48,7 +48,6 @@ class LoginApp:
         for user in self.users_data:
             if user["username"] == username and user["password"] == password:
                 messagebox.showinfo("Login Successful", f"Welcome, {user['name']}!")
-                logging.basicConfig(filename="admin.log", level=logging.INFO, format="%(asctime)s - %(message)s")
                 logging.info(f"User '{user['name']}' logged in successfully.")
                 self.root.destroy()
                 MainUI.main()

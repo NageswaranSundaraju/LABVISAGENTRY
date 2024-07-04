@@ -90,6 +90,7 @@ class FaceRecognitionApp:
                     self.current_name = name
                     print(self.current_name)
                     self.fetch_user_info(self.current_name)
+                    logging.info(f"Access granted for {self.current_name}")
             names.append(name)
 
         if not face_detected:  # Show message if no face is detected
@@ -104,17 +105,17 @@ class FaceRecognitionApp:
             cv2.putText(frame, name, (left, y), cv2.FONT_HERSHEY_SIMPLEX, .8, (0, 255, 255), 2)
         return frame
 
-    def fetch_user_info(self, nickname):
+    def fetch_user_info(self, noic):
         try:
             connection = mysql.connector.connect(
                 user='NAGES',
                 password='ROOT',
-                host='192.168.0.254',
+                host='192.168.146.1',
                 database='lvedb'
             )
             if connection.is_connected():
                 cursor = connection.cursor()
-                cursor.execute("SELECT name, noic FROM lect WHERE nickname = %s", (nickname,))
+                cursor.execute("SELECT nameFROM lect WHERE noic = %s", (noic,))
                 record = cursor.fetchone()
                 if record:
                     self.NameEntry.config(text=record[0])
@@ -171,5 +172,4 @@ if __name__ == "__main__":
     root = tk.Tk()
     app = FaceRecognitionApp(root)
     root.mainloop()
-    app.cap.stop()
-    app.fps.stop()
+
