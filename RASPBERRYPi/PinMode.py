@@ -3,7 +3,7 @@ from tkinter import messagebox
 
 # Predefined PIN for validation
 CORRECT_PIN = "1234"
-ATTEMPT_LIMIT = 1
+ATTEMPT_LIMIT = 5
 
 def setup_pin_entry_window():
     """Sets up the PIN entry window"""
@@ -27,9 +27,6 @@ def setup_pin_entry_window():
             attempt_count += 1
             if attempt_count >= ATTEMPT_LIMIT:
                 error_box = messagebox.showerror("Access Denied", "Access Denied, Contact PIC")
-                # root.withdraw()  # Hide the main window
-                # error_box = messagebox.showerror("Access Denied", "Contact OIC")
-                #root.deiconify()  # Show the main window again
                 root.wait_window(error_box)  # Wait until the error box is closed
                 root.destroy()  # Close the main window after the error box is closed
             else:
@@ -43,9 +40,7 @@ def setup_pin_entry_window():
     label = tk.Label(root, text="Enter your PIN:")
     label.grid(row=0, column=0, columnspan=3)
 
-    pin_entry = tk.Entry(root, textvariable=pin_var,
-                         #show="*" //disabled for debugging
-                         )
+    pin_entry = tk.Entry(root, textvariable=pin_var)
     pin_entry.grid(row=1, column=0, columnspan=3)
 
     buttons = [
@@ -57,14 +52,15 @@ def setup_pin_entry_window():
     keyFrame = tk.Frame(root)
     keyFrame.grid(row=2, column=0, columnspan=3)
     for (text, row, col) in buttons:
-        button = tk.Button(keyFrame, text=text, command=lambda t=text: add_digit(t))
+        button = tk.Button(keyFrame, text=text, command=lambda t=text: add_digit(t), width=10, height=3)
         button.grid(row=row, column=col, padx=5, pady=5)
 
-    clear_button = tk.Button(keyFrame, text="Clear", command=clear_pin)
+    clear_button = tk.Button(keyFrame, text="Clear", command=clear_pin, width=10, height=3)
     clear_button.grid(row=4, column=0, padx=5, pady=5)
 
-    submit_button = tk.Button(keyFrame, text="Submit", command=validate_pin)
+    submit_button = tk.Button(keyFrame, text="Submit", command=validate_pin, width=10, height=3)
     submit_button.grid(row=4, column=2, padx=5, pady=5)
 
     root.mainloop()
+
 

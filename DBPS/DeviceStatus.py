@@ -1,3 +1,4 @@
+import os
 import tkinter as tk
 from tkinter import ttk, messagebox
 import paramiko
@@ -9,8 +10,22 @@ from cryptography.fernet import Fernet
 logging.basicConfig(filename="admin.log", level=logging.ERROR,
                     format='%(asctime)s - %(levelname)s - %(message)s')
 
-# Generate a key for encryption (this should ideally be securely stored)
-key = Fernet.generate_key()
+# File to store the encryption key
+KEY_FILE = 'secret.key'
+
+def generate_key():
+    key = Fernet.generate_key()
+    with open(KEY_FILE, 'wb') as key_file:
+        key_file.write(key)
+
+def load_key():
+    return open(KEY_FILE, 'rb').read()
+
+# Generate a key for encryption if it doesn't exist
+if not os.path.exists(KEY_FILE):
+    generate_key()
+
+key = load_key()
 cipher_suite = Fernet(key)
 
 def encrypt_password(password):

@@ -4,17 +4,19 @@ import mysql.connector
 import logging
 import os
 import shutil
+import json
 
 logging.basicConfig(filename="admin.log", level=logging.ERROR,
                     format='%(asctime)s - %(levelname)s - %(message)s')
-
+with open('config.json') as config_file:
+    config = json.load(config_file)
 def fetch_data():
     try:
         connection = mysql.connector.connect(
-            user='Nages',
-            password='admin',
-            host='192.168.146.1',
-            database='lvedb'
+            user=config["database"]["user"],
+            password=config["database"]["password"],
+            host=config["database"]["host"],
+            database=config["database"]["db"]
         )
         cursor = connection.cursor()
         select_query = "SELECT name, noic, notel FROM lect"
@@ -34,10 +36,10 @@ def fetch_data():
 def delete_data(selected_item):
     try:
         connection = mysql.connector.connect(
-            user='Nages',
-            password='admin',
-            host='192.168.146.1',
-            database='lvedb'
+            user=config["database"]["user"],
+            password=config["database"]["password"],
+            host=config["database"]["host"],
+            database=config["database"]["db"]
         )
         cursor = connection.cursor()
 
@@ -72,10 +74,10 @@ def delete_data(selected_item):
 def update_data(selected_item, updated_values):
     try:
         connection = mysql.connector.connect(
-            user='Nages',
-            password='admin',
-            host='192.168.146.1',
-            database='lvedb'
+            user=config["database"]["user"],
+            password=config["database"]["password"],
+            host=config["database"]["host"],
+            database=config["database"]["db"]
         )
         cursor = connection.cursor()
         update_query = "UPDATE lect SET name = %s, notel = %s WHERE noic = %s"

@@ -1,10 +1,10 @@
 {
     "devices": [
         {
-            "name": "Test",
-            "hostname": "192.168.146.174",
-            "username": "pi",
-            "password": "gAAAAABmhxDWjT6Nuuludz-EIZmvMDnooKQjTJz6L5wZT4TLgPqU64v2HaL43cHrR3DIQHtLOhQpH-6iIur1Rrmqx-vu40VU7w=="
+            "name": "RK 1",
+            "hostname": "192.168.0.1",
+            "username": "admin",
+            "password": "gAAAAABmk06NLw8s91MtPj0xdo7x3FhCq8Lmu_J7G3UTpW_4BZ5oVmw-tZ9xQOu7JtA04rPspzbnxCZhOHzeQHg9NBX1ynIMIQ=="
         }
     ]
 }
